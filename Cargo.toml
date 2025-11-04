@@ -1,3 +1,7 @@
+[workspace]
+members = ["guessing_game"]
+resolver = "2"
+
 [package]
 name = "rust-tryout"
 version = "0.1.0"
