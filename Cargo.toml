@@ -1,5 +1,5 @@
 [workspace]
-members = ["guessing_game"]
+members = ["guessing_game", "variables"]
 resolver = "2"
 
 [package]
