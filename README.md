@@ -9,6 +9,7 @@ This repository contains code and exercises I'm working through while following 
 ## Projects
 
 - **Guessing Game** - A simple number guessing game to learn basic Rust concepts
+- **Variables** - Experimenting with core concepts and control structures
 
 ---
 
