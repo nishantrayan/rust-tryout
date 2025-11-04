@@ -1,5 +1,5 @@
 [workspace]
-members = ["guessing_game", "ownership", "structs", "variables"]
+members = ["enums","guessing_game", "my-project", "ownership", "restaurant", "structs", "variables"]
 resolver = "2"
 
 [package]
