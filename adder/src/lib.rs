@@ -13,7 +13,7 @@ impl Rectangle {
     }
 }
 
-fn add_two(a: i32) -> i32 {
+pub fn add_two(a: i32) -> i32 {
     a + 2
 }
 
@@ -32,6 +32,14 @@ impl Guess {
         }
         Guess { value }
     }
+}
+
+pub fn add_two_2(a: i32) -> i32 {
+    a + 2
+}
+
+fn internal_adder(a: i32, b: i32) -> i32 {
+    a + b
 }
 
 #[cfg(test)]
@@ -102,10 +110,22 @@ mod tests {
 
     #[test]
     fn it_works_2() -> Result<(), String> {
+        println!("it_works_2");
         if 2 + 2 == 4 {
             Ok(())
         } else {
             Err(String::from("two plus two does not equal four"))
         }
+    }
+
+    #[test]
+    #[ignore]
+    fn ignored_test() {
+        panic!("Make this test fail");
+    }
+
+    #[test]
+    fn internal() {
+        assert_eq!(4, internal_adder(2, 2));
     }
 }
