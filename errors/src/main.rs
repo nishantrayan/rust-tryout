@@ -25,7 +25,7 @@ fn main() {
     });
 
     // let f2 = File::open("hello2.txt").expect("Failed to open file hello2");
-    let username = read_username_from_file()?;
+    let username = read_username_from_file().expect("Failed to read username from file");
     println!("username = {username}");
 }
 fn read_username_from_file() -> Result<String, Error> {

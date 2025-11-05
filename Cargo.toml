@@ -1,5 +1,5 @@
 [workspace]
-members = ["collections","enums", "errors","guessing_game", "my-project", "ownership", "restaurant", "structs", "variables"]
+members = ["collections","enums", "errors", "generics","guessing_game", "my-project", "ownership", "restaurant", "structs", "variables"]
 resolver = "2"
 
 [package]
