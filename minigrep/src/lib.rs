@@ -10,6 +10,7 @@ struct Highlight<'a> {
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(config.file)?;
     let results = if config.case_sensitive {
+        println!("Case sensitive search");
         search(&config.query, &contents)
     } else {
         search_case_insensitive(&config.query, &contents)
@@ -20,7 +21,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
                 .highlight_ranges
                 .iter()
                 .any(|(start, end)| (*start..*end).contains(&index));
-         
+
             if is_highlighted {
                 print!("{}", chr.to_string().green());
             } else {
@@ -32,14 +33,40 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn highlight_line<'a>(line: &'a str, query: &str) -> Highlight<'a> {
+fn highlight_line<'a>(line: &'a str, query: &str, case_sensitive: bool) -> Highlight<'a> {
     let mut highlight_ranges = Vec::new();
-    for i in query.len() - 1..line.len() {
-        let start = i + 1 - query.len();
-        let end = i + 1;
-        let token = &line[start..end];
-        if token.to_lowercase() == query.to_lowercase() {
-            highlight_ranges.push((start, end));
+    println!("line = {line}, query = {query}");
+
+    // Convert to character indices to handle UTF-8 properly
+    let line_chars: Vec<(usize, char)> = line.char_indices().collect();
+    let query_len = query.chars().count();
+
+    if query_len == 0 || line_chars.len() < query_len {
+        return Highlight {
+            line,
+            highlight_ranges,
+        };
+    }
+
+    let case_correctly = |input_str: &str| -> String {
+        match case_sensitive {
+            true => input_str.to_string(),
+            false => input_str.to_lowercase(),
+        }
+    };
+    for i in (query_len - 1)..line_chars.len() {
+        let start_char_idx = i + 1 - query_len;
+        let start_byte = line_chars[start_char_idx].0;
+        let end_byte = if i + 1 < line_chars.len() {
+            line_chars[i + 1].0
+        } else {
+            line.len()
+        };
+
+        let token = &line[start_byte..end_byte];
+        
+        if case_correctly(&token) == case_correctly(&query) {
+            highlight_ranges.push((start_char_idx, i + 1));
         }
     }
     Highlight {
@@ -51,7 +78,7 @@ pub fn search<'a>(query: &str, contents: &'a str) -> Vec<Highlight<'a>> {
     contents
         .lines()
         .filter(|line| line.contains(query))
-        .map(|line| highlight_line(line, query))
+        .map(|line| highlight_line(line, query, true))
         .collect()
 }
 
@@ -59,7 +86,7 @@ pub fn search_case_insensitive<'a>(query: &str, contents: &'a str) -> Vec<Highli
     contents
         .lines()
         .filter(|line| line.to_lowercase().contains(&query.to_lowercase()))
-        .map(|line| highlight_line(line, query))
+        .map(|line| highlight_line(line, query, false))
         .collect()
 }
 pub struct Config {
