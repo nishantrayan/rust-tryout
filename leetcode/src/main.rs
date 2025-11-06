@@ -20,19 +20,14 @@ pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
     vec![]
 }
 
-pub fn is_palindrome(original_x: i32) -> bool {
-    if original_x < 0 {
+pub fn is_palindrome(x: i32) -> bool {
+    if x < 0 {
         return false;
     }
-    let mut reversed = 0;
-    let mut x = original_x;
-    loop {
-        let last_digit = x % 10;
-        reversed = reversed * 10 + last_digit;
-        x = x / 10;
-        if x == 0 {
-            break;
-        }
+    let (mut n, mut rev) = (x, 0);
+    while n != 0 {
+        rev = rev * 10 + n % 10;
+        n /= 10;
     }
-    reversed == original_x
+    rev == x
 }
