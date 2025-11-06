@@ -1,10 +1,37 @@
+use std::rc::Rc;
+use std::cell::RefCell;
+
+#[derive(Debug)]
+enum List {
+    Cons(Rc<RefCell<i32>>, Rc<List>),
+    Nil,
+}
+
+use List::{Cons, Nil};
+
+#[derive(Debug)]
+enum MyList {
+    Cons(Rc<RefCell<i32>>, Rc<MyList>),
+    Nil,
+}
 fn main() {
-    // let a = 5;
-    // let b = &mut a;
-    // let mut c = 10;
-    // let d = &c;
-    // *d = 20;
-    // println!("c = {c}, d = {d}");
+    // let value = Rc::new(RefCell::new(5));
+    // let a = Rc::new(Cons(Rc::clone(&value), Rc::new(Nil)));
+    // let b = Rc::new(Cons(Rc::new(RefCell::new(3)), Rc::clone(&a)));
+    // let c = Rc::new(Cons(Rc::new(RefCell::new(4)), Rc::clone(&a)));
+    // *value.borrow_mut() += 10;
+    // println!("a = {:#?}, b = {:#?}, c = {:#?}", a, b, c);
+
+
+    let value= Rc::new(RefCell::new(5));
+    let a = Rc::new(MyList::Cons(Rc::clone(&value), Rc::new(MyList::Nil)));
+    let b = MyList::Cons(Rc::new(RefCell::new(6)), Rc::clone(&a));
+    *value.borrow_mut() += 10;
+    println!("a = {:#?}", a);
+    println!("b = {:#?}", b);
+
+
+
 }
 
 pub trait Messenger {
