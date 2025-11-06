@@ -13,6 +13,7 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
         println!("Case sensitive search");
         search(&config.query, &contents)
     } else {
+        println!("Case insensitive search");
         search_case_insensitive(&config.query, &contents)
     };
     for highlight in results {
@@ -35,7 +36,6 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
 fn highlight_line<'a>(line: &'a str, query: &str, case_sensitive: bool) -> Highlight<'a> {
     let mut highlight_ranges = Vec::new();
-    println!("line = {line}, query = {query}");
 
     // Convert to character indices to handle UTF-8 properly
     let line_chars: Vec<(usize, char)> = line.char_indices().collect();
