@@ -1,5 +1,5 @@
 [workspace]
-members = ["adder", "box_pointer", "closures","collections", "deref_and_drop","enums", "errors", "generics","guessing_game", "interior_mutability", "iterators", "leetcode", "lifetimes", "minigrep", "my-project", "ownership", "passing_data", "reference_cycles", "restaurant", "structs", "traits", "using_threads", "variables"]
+members = ["adder", "box_pointer", "closures","collections", "deref_and_drop","enums", "errors", "generics","guessing_game", "interior_mutability", "iterators", "leetcode", "lifetimes", "minigrep", "my-project", "ownership", "passing_data", "reference_cycles", "restaurant", "shared_state", "structs", "traits", "using_threads", "variables"]
 resolver = "2"
 
 [package]
