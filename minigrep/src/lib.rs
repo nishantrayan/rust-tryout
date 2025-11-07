@@ -64,7 +64,7 @@ fn highlight_line<'a>(line: &'a str, query: &str, case_sensitive: bool) -> Highl
         };
 
         let token = &line[start_byte..end_byte];
-        
+
         if case_correctly(&token) == case_correctly(&query) {
             highlight_ranges.push((start_char_idx, i + 1));
         }
@@ -96,7 +96,10 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn new(mut args: env::Args) -> Result<Config, &'static str> {
+    pub fn new<T>(mut args: T) -> Result<Config, &'static str>
+    where
+        T: Iterator<Item = String>,
+    {
         args.next();
         let query = match args.next() {
             Some(arg) => arg,
@@ -117,30 +120,102 @@ impl Config {
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     #[test]
-//     fn one_result() {
-//         let query = "duct";
-//         let contents = "\
-// Rust:
-// safe, fast, productive.
-// Pick three.
-// Duct tape.";
-//         let results = search(query, contents);
-//         assert_eq!(results, vec!["safe, fast, productive."]);
-//     }
+#[cfg(test)]
+mod tests {
+    use super::*;
+    struct Args {
+        program: String,
+        query: Option<String>,
+        file: Option<String>,
+    }
+    impl Iterator for Args {
+        type Item = String;
+        fn next(&mut self) -> Option<Self::Item> {
+            // Provide program, then query, then file, each as they are requested, consuming the Option in order.
+            let next_val = if self.program.is_empty() {
+                None
+            } else {
+                let prog = std::mem::take(&mut self.program);
+                if !prog.is_empty() {
+                    return Some(prog);
+                }
+                // else fallthrough to next
+                None
+            };
 
-//     #[test]
-//     fn case_sensitive() {
-//         let query = "rUst";
-//         let contents = "\
-// Rust:
-// safe, fast, productive.
-// Pick three.
-// Trust me.";
-//         let results = search_case_insensitive(query, contents);
-//         assert_eq!(results, vec!["Rust:", "Trust me."]);
-//     }
-// }
+            if next_val.is_some() {
+                return next_val;
+            }
+
+            if let Some(q) = self.query.take() {
+                return Some(q);
+            }
+            if let Some(f) = self.file.take() {
+                return Some(f);
+            }
+            None
+        }
+    }
+    #[test]
+    fn case_sensitive() {
+        let query = "duct";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Pick three.
+Duct tape.";
+
+        let results = search(query, contents);
+        let lines: Vec<&str> = results.iter().map(|h| h.line).collect();
+        assert_eq!(lines, vec!["safe, fast, productive."]);
+    }
+
+    #[test]
+    fn case_insensitive() {
+        let query = "rUsT";
+        let contents = "\
+Rust:
+safe, fast, productive.
+Trust me.";
+
+        let results = search_case_insensitive(query, contents);
+        let lines: Vec<&str> = results.iter().map(|h| h.line).collect();
+        assert_eq!(lines, vec!["Rust:", "Trust me."]);
+    }
+
+    #[test]
+    fn config_new_success() {
+        let args = Args {
+            program: "minigrep".to_string(),
+            query: Some("foo".to_string()),
+            file: Some("bar".to_string()),
+        };
+        let config = Config::new(args);
+        assert!(config.is_ok());
+        let cfg = config.unwrap();
+        assert_eq!(cfg.query, "foo");
+        assert_eq!(cfg.file, "bar");
+    }
+
+    #[test]
+    fn config_new_missing_query() {
+        let args = Args {
+            program: "minigrep".to_string(),
+            query: None,
+            file: None,
+        };
+        let config = Config::new(args);
+        assert!(config.is_err());
+    }
+
+    #[test]
+    fn config_new_missing_file() {
+        let args = Args {
+            program: "minigrep".to_string(),
+            query: Some("foo".to_string()),
+            file: None,
+        };
+        let config = Config::new(args);
+        assert!(config.is_err());
+    }
+}
