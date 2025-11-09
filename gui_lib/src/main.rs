@@ -14,7 +14,7 @@ impl AveragedCollection {
             Some(value) => {
                 self.update_average();
                 Some(value)
-            },
+            }
             None => None,
         }
     }
@@ -30,10 +30,44 @@ impl AveragedCollection {
     }
 }
 
+use gui_lib::{Draw, Screen, Button};
+
+struct SelectBox {
+    width: u32,
+    height: u32,
+    options: Vec<String>,
+}
+
+impl Draw for SelectBox {
+    fn draw(&self) {
+        println!(
+            "Drawing a select box with width {}, height {}, and options {}",
+            self.width,
+            self.height,
+            self.options.join(", ")
+        );
+    }
+}
+
 fn main() {
-    let mut collection = AveragedCollection {
-        list: vec![1,2,3],
-        average: 0.0,
+    // let mut collection = AveragedCollection {
+    //     list: vec![1,2,3],
+    //     average: 0.0,
+    // };
+    // println!("average = {}", collection.average());
+    let screen = Screen {
+        components: vec![
+            Box::new(SelectBox {
+                width: 100,
+                height: 100,
+                options: vec!["Yes".to_string(), "No".to_string()],
+            }),
+            Box::new(Button {
+                width: 100,
+                height: 100,    
+                label: "Click me".to_string(),
+            }),
+        ],
     };
-    println!("average = {}", collection.average());
+    screen.run();
 }
