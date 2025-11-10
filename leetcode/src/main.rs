@@ -4,6 +4,8 @@ fn main() {
 
     assert_eq!(true, is_palindrome(121));
     assert_eq!(false, is_palindrome(12));
+
+    assert_eq!(1994, roman_to_int("MCMXCIV".to_string()));
 }
 
 pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
@@ -30,4 +32,30 @@ pub fn is_palindrome(x: i32) -> bool {
         n /= 10;
     }
     rev == x
+}
+
+pub fn roman_to_int(s: String) -> i32 {
+    let s = String::from(s + " ");
+    let chars: Vec<char> = s.chars().collect::<Vec<char>>();
+    let mut windows = chars.windows(2);
+    let mut num = 0;
+    while let Some(window) = windows.next() {
+        let (first, second) = window.split_at(1);
+        // first and second are &[char], so destructure by indexing
+        let add_num = match (first[0], second[0]) {
+            ('I', 'V') | ('I', 'X') => -1,
+            ('I', _) => 1,
+            ('X', 'L') | ('X', 'C') => -10,
+            ('X', _) => 10,
+            ('C', 'D') | ('C', 'M') => -100,
+            ('C', _) => 100,
+            ('V', _) => 5,
+            ('L', _) => 50,
+            ('D', _) => 500,
+            ('M', _) => 1000,
+            _ => 0,
+        };
+        num += add_num;
+    }
+    num
 }
