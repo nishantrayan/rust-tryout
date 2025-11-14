@@ -6,6 +6,11 @@ fn main() {
     assert_eq!(false, is_palindrome(12));
 
     assert_eq!(1994, roman_to_int("MCMXCIV".to_string()));
+
+    assert_eq!(
+        String::from("abcd"),
+        longest_common_prefix(vec![String::from("abcd"), String::from("abcde")])
+    )
 }
 
 pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
@@ -58,4 +63,37 @@ pub fn roman_to_int(s: String) -> i32 {
         num += add_num;
     }
     num
+}
+
+pub fn longest_common_prefix(strs: Vec<String>) -> String {
+    if strs.is_empty() {
+        return String::new();
+    }
+    let mut index: usize = 0;
+    loop {
+        let all_chars: Vec<_> = strs
+            .iter()
+            .map(|s| s.chars().nth(index))
+            .collect();
+
+        if all_chars.iter().any(|c| c.is_none()) {
+            break;
+        }
+
+        if let Some(first) = all_chars.first() {
+            let all_match = all_chars.iter().all(|c| c == first);
+            if all_match {
+                index += 1;
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+    strs.first()
+        .unwrap()
+        .chars()
+        .take(index)
+        .collect::<String>()
 }
