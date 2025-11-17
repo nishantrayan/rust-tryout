@@ -10,7 +10,16 @@ fn main() {
     assert_eq!(
         String::from("abcd"),
         longest_common_prefix(vec![String::from("abcd"), String::from("abcde")])
-    )
+    );
+
+    assert_eq!(true, is_valid("()".to_string()));
+    assert_eq!(true, is_valid("()[]{}".to_string()));
+    assert_eq!(false, is_valid("(]".to_string()));
+    assert_eq!(false, is_valid("([)]".to_string()));
+    assert_eq!(true, is_valid("{[]}".to_string()));
+    assert_eq!(false, is_valid("([".to_string()));
+    assert_eq!(false, is_valid("]".to_string()));
+    assert_eq!(false, is_valid("([".to_string()));
 }
 
 pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
@@ -97,3 +106,18 @@ pub fn longest_common_prefix(strs: Vec<String>) -> String {
         .take(index)
         .collect::<String>()
 }
+
+pub fn is_valid(s: String) -> bool {
+    let mut stack = Vec::new();
+    for c in s.chars() {
+        match c {
+            '(' | '[' | '{' => { stack.push(c); }
+            ')' => if stack.pop() != Some('(') { return false; }
+            ']' => if stack.pop() != Some('[') { return false; }
+            '}' => if stack.pop() != Some('{') { return false; }
+            _ => { return false; }
+        }
+    }
+    stack.is_empty()
+}
+
