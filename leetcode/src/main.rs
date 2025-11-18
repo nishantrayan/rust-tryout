@@ -20,6 +20,56 @@ fn main() {
     assert_eq!(false, is_valid("([".to_string()));
     assert_eq!(false, is_valid("]".to_string()));
     assert_eq!(false, is_valid("([".to_string()));
+
+    // Tests for merge_two_lists
+    let l1 = Some(Box::new(ListNode {
+        val: 1,
+        next: Some(Box::new(ListNode {
+            val: 2,
+            next: Some(Box::new(ListNode {
+                val: 4,
+                next: None,
+            })),
+        })),
+    }));
+    let l2 = Some(Box::new(ListNode {
+        val: 1,
+        next: Some(Box::new(ListNode {
+            val: 3,
+            next: Some(Box::new(ListNode {
+                val: 4,
+                next: None,
+            })),
+        })),
+    }));
+    let result = merge_two_lists(l1, l2);
+
+    // Convert result to Vec for easy comparison
+    fn listnode_to_vec(mut list: Option<Box<ListNode>>) -> Vec<i32> {
+        let mut v = vec![];
+        while let Some(node) = list {
+            v.push(node.val);
+            list = node.next;
+        }
+        v
+    }
+    assert_eq!(listnode_to_vec(result), vec![1,1,2,3,4,4]);
+
+    // Test with one empty list
+    let l1 = None;
+    let l2 = Some(Box::new(ListNode {
+        val: 0,
+        next: None,
+    }));
+    let result = merge_two_lists(l1, l2);
+    assert_eq!(listnode_to_vec(result), vec![0]);
+
+    // Test with both empty lists
+    let l1 = None;
+    let l2 = None;
+    let result = merge_two_lists(l1, l2);
+    assert_eq!(listnode_to_vec(result), vec![]);
+    
 }
 
 pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
@@ -121,3 +171,44 @@ pub fn is_valid(s: String) -> bool {
     stack.is_empty()
 }
 
+
+
+// Definition for singly-linked list.
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct ListNode {
+  pub val: i32,
+  pub next: Option<Box<ListNode>>
+}
+
+impl ListNode {
+  #[inline]
+  fn new(val: i32) -> Self {
+    ListNode {
+      next: None,
+      val
+    }
+  }
+}
+
+pub fn merge_two_lists(mut list1: Option<Box<ListNode>>, mut list2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+    let mut new_list = Box::new(ListNode {
+        val: 0,
+        next: None,
+    });
+    let mut tail = &mut new_list;
+    while list1.is_some() && list2.is_some() {
+        let (l1, l2) = (list1.as_mut().unwrap(), list2.as_mut().unwrap());
+        if l1.val <= l2.val {
+            let mut node = list1.take().unwrap();
+            list1 = node.next.take();
+            tail.next = Some(node);
+        } else {
+            let mut node = list2.take().unwrap();
+            list2 = node.next.take();
+            tail.next = Some(node);
+        }
+        tail = tail.next.as_mut().unwrap();
+    }
+    tail.next = if list1.is_some() { list1 } else { list2 };
+    new_list.next
+}
