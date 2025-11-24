@@ -170,17 +170,15 @@ pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
 pub fn remove_element(nums: &mut Vec<i32>, val: i32) -> i32 {
     let mut i = 0;
     let mut empty_slots = Vec::<usize>::new();
-    let mut empty_index: usize = 0;
     let mut count: usize = 0;
     while i < nums.len() {
         if nums[i] == val {
-            empty_slots.push(i);
+            empty_slots.insert(0, i);
         } else {
             count = count + 1;
-            if empty_slots.len() > 0 && empty_index < empty_slots.len() {
-                nums[empty_slots[empty_index]] = nums[i];
-                empty_slots.push(i);
-                empty_index = empty_index + 1;
+            if let Some(empty_index) = empty_slots.pop() {
+                nums[empty_index] = nums[i];
+                empty_slots.insert(0, i);
             }
         }
         i = i + 1;
