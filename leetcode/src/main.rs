@@ -15,7 +15,110 @@ fn listnode_to_vec(mut list: Option<Box<ListNode>>) -> Vec<i32> {
 // ============================================================================
 // LeetCode Solutions
 // ============================================================================
+pub fn str_str(haystack: String, needle: String) -> i32 {
+    let haystack_chars: Vec<char> = haystack.chars().collect();
+    for (index, w) in haystack_chars.windows(needle.len()).enumerate() {
+        let word = String::from_iter(w);
+        if word == needle {
+            return index as i32;
+        }
+    }
+    -1
+}
 
+pub fn plus_one(digits: Vec<i32>) -> Vec<i32> {
+    let mut carry = 1;
+    let mut rev_digits = digits.iter().rev();
+    let mut final_digits = Vec::new();
+    while let Some(digit) = rev_digits.next() {
+        let mut add_digit = carry + digit;
+        match add_digit {
+            10 => {
+                carry = 1;
+                add_digit = 0;
+            }
+            _ => {
+                carry = 0;
+            }
+        }
+        final_digits.insert(0, add_digit);
+    }
+    if carry == 1 {
+        final_digits.insert(0, 1);
+    }
+    final_digits
+}
+
+pub fn add_binary(a: String, b: String) -> String {
+    let mut result = Vec::<char>::new();
+    let mut carry = 0;
+    let max_len = a.len().max(b.len());
+    let (mut a_padded, mut b_padded) = (
+        a.chars().collect::<Vec<char>>(),
+        b.chars().collect::<Vec<char>>(),
+    );
+    for _ in 0..(max_len - a.len()) {
+        a_padded.insert(0, '0')
+    }
+    for _ in 0..(max_len - b.len()) {
+        b_padded.insert(0, '0')
+    }
+    let (mut a_rev, mut b_rev) = (a_padded.iter().rev(), b_padded.iter().rev());
+    for (a_digit, b_digit) in a_rev.zip(b_rev) {
+        let mut sum = (a_digit.to_string().parse::<i32>()).unwrap()
+            + (b_digit.to_string().parse::<i32>()).unwrap()
+            + carry;
+        result.insert(0, char::from_digit((sum % 2) as u32, 10).unwrap());
+        carry = sum / 2;
+    }
+    if carry == 1 {
+        result.insert(0, '1');
+    }
+    result.iter().collect::<String>()
+}
+pub fn length_of_last_word(s: String) -> i32 {
+    let mut c_count = 0;
+    let mut chars = s.chars().rev();
+    while let Some(c) = chars.next() {
+        if c == ' ' {
+            if c_count == 0 {
+                continue;
+            } else {
+                return c_count;
+            }
+        } else {
+            c_count += 1;
+        }
+    }
+    c_count
+}
+
+pub fn search_insert(nums: Vec<i32>, target: i32) -> i32 {
+    if nums.is_empty() {
+        return 0;
+    }
+
+    let (mut left, mut right) = (0, nums.len() - 1);
+
+    while left <= right {
+        let mid = left + (right - left) / 2;
+
+        if nums[mid] == target {
+            return mid as i32;
+        }
+
+        if nums[mid] < target {
+            left = mid + 1;
+        } else {
+            if mid == 0 {
+                return 0;
+            }
+            right = mid - 1;
+        }
+    }
+
+    left as i32
+}
 pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
     use std::collections::HashMap;
 
@@ -73,10 +176,7 @@ pub fn longest_common_prefix(strs: Vec<String>) -> String {
     }
     let mut index: usize = 0;
     loop {
-        let all_chars: Vec<_> = strs
-            .iter()
-            .map(|s| s.chars().nth(index))
-            .collect();
+        let all_chars: Vec<_> = strs.iter().map(|s| s.chars().nth(index)).collect();
 
         if all_chars.iter().any(|c| c.is_none()) {
             break;
@@ -104,11 +204,27 @@ pub fn is_valid(s: String) -> bool {
     let mut stack = Vec::new();
     for c in s.chars() {
         match c {
-            '(' | '[' | '{' => { stack.push(c); }
-            ')' => if stack.pop() != Some('(') { return false; }
-            ']' => if stack.pop() != Some('[') { return false; }
-            '}' => if stack.pop() != Some('{') { return false; }
-            _ => { return false; }
+            '(' | '[' | '{' => {
+                stack.push(c);
+            }
+            ')' => {
+                if stack.pop() != Some('(') {
+                    return false;
+                }
+            }
+            ']' => {
+                if stack.pop() != Some('[') {
+                    return false;
+                }
+            }
+            '}' => {
+                if stack.pop() != Some('{') {
+                    return false;
+                }
+            }
+            _ => {
+                return false;
+            }
         }
     }
     stack.is_empty()
@@ -118,24 +234,21 @@ pub fn is_valid(s: String) -> bool {
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct ListNode {
     pub val: i32,
-    pub next: Option<Box<ListNode>>
+    pub next: Option<Box<ListNode>>,
 }
 
 impl ListNode {
     #[inline]
     fn new(val: i32) -> Self {
-        ListNode {
-            next: None,
-            val
-        }
+        ListNode { next: None, val }
     }
 }
 
-pub fn merge_two_lists(mut list1: Option<Box<ListNode>>, mut list2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
-    let mut new_list = Box::new(ListNode {
-        val: 0,
-        next: None,
-    });
+pub fn merge_two_lists(
+    mut list1: Option<Box<ListNode>>,
+    mut list2: Option<Box<ListNode>>,
+) -> Option<Box<ListNode>> {
+    let mut new_list = Box::new(ListNode { val: 0, next: None });
     let mut tail = &mut new_list;
     while list1.is_some() && list2.is_some() {
         let (l1, l2) = (list1.as_mut().unwrap(), list2.as_mut().unwrap());
@@ -169,16 +282,32 @@ pub fn remove_duplicates(nums: &mut Vec<i32>) -> i32 {
 
 pub fn remove_element(nums: &mut Vec<i32>, val: i32) -> i32 {
     let mut i = 0;
-    let mut empty_slots = Vec::<usize>::new();
+
+    struct EmptySlotList(Vec<usize>);
+    impl EmptySlotList {
+        fn new() -> Self {
+            EmptySlotList(Vec::new())
+        }
+
+        fn push(&mut self, index: usize) {
+            self.0.insert(0, index);
+        }
+
+        fn pop(&mut self) -> Option<usize> {
+            self.0.pop()
+        }
+    }
+
+    let mut empty_slots = EmptySlotList::new();
     let mut count: usize = 0;
     while i < nums.len() {
         if nums[i] == val {
-            empty_slots.insert(0, i);
+            empty_slots.push(i);
         } else {
             count = count + 1;
             if let Some(empty_index) = empty_slots.pop() {
                 nums[empty_index] = nums[i];
-                empty_slots.insert(0, i);
+                empty_slots.push(i);
             }
         }
         i = i + 1;
@@ -193,6 +322,83 @@ pub fn remove_element(nums: &mut Vec<i32>, val: i32) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_add_binary_overflow() {
+        assert_eq!(
+            add_binary("10".to_string(), "10".to_string()),
+            "100".to_string()
+        );
+    }
+
+    #[test]
+    fn test_add_binary_basic() {
+        assert_eq!(
+            add_binary("1".to_string(), "0".to_string()),
+            "1".to_string()
+        );
+    }
+
+    #[test]
+    fn test_add_binary_carry_follow() {
+        assert_eq!(
+            add_binary("111111".to_string(), "1".to_string()),
+            "1000000".to_string()
+        );
+    }
+
+    #[test]
+    fn test_plus_one_same_len() {
+        assert_eq!(plus_one(vec![1, 0]), vec![1, 1]);
+    }
+
+    #[test]
+    fn test_plus_one_increases_len() {
+        assert_eq!(plus_one(vec![9, 9]), vec![1, 0, 0]);
+    }
+
+    #[test]
+    fn test_length_of_last_word() {
+        assert_eq!(length_of_last_word("abc d efg".to_string()), 3);
+        assert_eq!(length_of_last_word("abcd".to_string()), 4);
+        assert_eq!(length_of_last_word(" a b ".to_string()), 1);
+    }
+    #[test]
+    fn test_search_insert_not_present() {
+        let nums = vec![1, 3, 5];
+        assert_eq!(search_insert(nums, 2), 1);
+    }
+
+    #[test]
+    fn test_search_insert_present_last() {
+        let nums = vec![1, 2, 3, 5];
+        assert_eq!(search_insert(nums, 6), 4);
+    }
+
+    #[test]
+    fn test_search_insert_present_first() {
+        let nums = vec![1, 2, 3, 5];
+        assert_eq!(search_insert(nums, 0), 0);
+    }
+
+    #[test]
+    fn test_search_insert_present_present() {
+        let nums = vec![1, 2, 3, 5];
+        assert_eq!(search_insert(nums, 5), 3);
+    }
+    #[test]
+    fn test_str_str_contains() {
+        let needle = "abcd";
+        let haystack = "abcdabcdabcd";
+        assert_eq!(str_str(haystack.to_string(), needle.to_string()), 0);
+    }
+
+    #[test]
+    fn test_str_str_not_contains() {
+        let needle = "abcd";
+        let haystack = "efghabc";
+        assert_eq!(str_str(haystack.to_string(), needle.to_string()), -1);
+    }
 
     // Two Sum Tests
     #[test]
@@ -270,20 +476,14 @@ mod tests {
             val: 1,
             next: Some(Box::new(ListNode {
                 val: 2,
-                next: Some(Box::new(ListNode {
-                    val: 4,
-                    next: None,
-                })),
+                next: Some(Box::new(ListNode { val: 4, next: None })),
             })),
         }));
         let l2 = Some(Box::new(ListNode {
             val: 1,
             next: Some(Box::new(ListNode {
                 val: 3,
-                next: Some(Box::new(ListNode {
-                    val: 4,
-                    next: None,
-                })),
+                next: Some(Box::new(ListNode { val: 4, next: None })),
             })),
         }));
         let result = merge_two_lists(l1, l2);
@@ -293,10 +493,7 @@ mod tests {
     #[test]
     fn test_merge_two_lists_one_empty() {
         let l1 = None;
-        let l2 = Some(Box::new(ListNode {
-            val: 0,
-            next: None,
-        }));
+        let l2 = Some(Box::new(ListNode { val: 0, next: None }));
         let result = merge_two_lists(l1, l2);
         assert_eq!(listnode_to_vec(result), vec![0]);
     }
