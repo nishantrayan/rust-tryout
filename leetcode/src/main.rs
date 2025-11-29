@@ -1,4 +1,5 @@
 mod remove_duplicates;
+mod merge_sorted_array;
 
 fn main() {
     println!("Run tests with: cargo test");
