@@ -1,3 +1,5 @@
+mod remove_duplicates;
+
 fn main() {
     println!("Run tests with: cargo test");
 }
@@ -24,6 +26,27 @@ pub fn str_str(haystack: String, needle: String) -> i32 {
         }
     }
     -1
+}
+
+pub fn my_sqrt(x: i32) -> i32 {
+    if x == 1 || x == 0 {
+        return x;
+    }
+    if x == 2 {
+        return 1;
+    }
+    let (mut left, mut right, x): (i64, i64, i64) = (1, x as i64 / 2, x as i64);
+    while left <= right {
+        let mid = left + (right - left) / 2;
+        if mid * mid > x {
+            right = mid - 1;
+        } else if (mid) * (mid) < x {
+            left = mid + 1;
+        } else {
+            return mid as i32;
+        }
+    }
+    right as i32
 }
 
 pub fn plus_one(digits: Vec<i32>) -> Vec<i32> {
@@ -322,6 +345,29 @@ pub fn remove_element(nums: &mut Vec<i32>, val: i32) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_sqrt_really_large() {
+        assert_eq!(my_sqrt(2147395599), 46339);
+    }
+    #[test]
+    fn test_sqrt_perfect() {
+        assert_eq!(my_sqrt(4), 2);
+    }
+    #[test]
+    fn test_sqrt_imperfect() {
+        assert_eq!(my_sqrt(10), 3);
+    }
+
+    #[test]
+    fn test_sqrt_large() {
+        assert_eq!(my_sqrt(1000), 31);
+    }
+
+    #[test]
+    fn test_sqrt_six() {
+        assert_eq!(my_sqrt(6), 2);
+    }
 
     #[test]
     fn test_add_binary_overflow() {
