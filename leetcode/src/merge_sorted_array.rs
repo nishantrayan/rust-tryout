@@ -15,7 +15,6 @@ pub fn merge(nums1: &mut Vec<i32>, m: i32, nums2: &mut Vec<i32>, n: i32) {
 }
 mod tests {
     use super::*;
-
     #[test]
     fn test_merge_non_empty_arrays() {
         let (mut nums1, mut nums2) = (vec![1, 2, 3, 0, 0, 0], vec![2, 5, 6]);
