@@ -1,5 +1,7 @@
 mod remove_duplicates;
 mod merge_sorted_array;
+mod inorder_traversal;
+mod same_tree;
 
 fn main() {
     println!("Run tests with: cargo test");
