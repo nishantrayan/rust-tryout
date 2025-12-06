@@ -2,6 +2,9 @@ mod remove_duplicates;
 mod merge_sorted_array;
 mod inorder_traversal;
 mod same_tree;
+mod is_isomorphic;
+
+mod is_happy;
 
 fn main() {
     println!("Run tests with: cargo test");
